@@ -1,25 +1,36 @@
 version: "3.7"
-
 services:
-  relaychain-alice:
-    image: parity/polkadot:v0.9.9-1
+  parachain-2000-0:
     ports:
-      - 9944:9944
-      - 9933:9933
-      - 30333:30333
-    volumes:
-      - relaychain-alice:/data
-      - ./chainspec-raw.json:/app/chainspec-raw.json
+      - 9947:9944
+      - 9936:9933
+      - 30336:30333
+    # volumes:
+    #   - parachain-2000-0:/data
+    build:
+      context: .
+      dockerfile: parachain-2000.Dockerfile
     command:
       - --base-path=/data
-      - --chain=/app/chainspec-raw.json
-      - --validator
+      - --chain=/app/karura-dev-2000.json
       - --ws-external
       - --rpc-external
       - --rpc-cors=all
-      - --name=alice
+      - --name=parachain-2000-0
+      - --collator
+      - --parachain-id=2000
       - --rpc-methods=unsafe
-      # - --force-authoring
+      - --force-authoring
+      - --execution=wasm
+      - --alice
+      - --node-key=7371e9cddb221106bf5d5862de62404bf435bd80444ae39c557fad123988b818
+      - --listen-addr=/ip4/0.0.0.0/tcp/30333
+      - --
+      - --chain=/app/chainspec-raw.json
+      - --bootnodes=/dns4/node-6841549915988910080-0.p2p.onfinality.io/tcp/23230/p2p/12D3KooWFNk2Ms1UYKWrQ3EtDDYVgPMmZqzunoYBTGKXxRGNKdV8
+      - --execution=wasm
+      - --no-beefy
+      - --name=relaychain-alice
     environment:
       RUST_LOG: debug
     ulimits:
@@ -27,50 +38,76 @@ services:
       nofile:
         soft: 65536
         hard: 65536
-  relaychain-bob:
-    image: parity/polkadot:v0.9.9-1
+  parachain-2000-1:
     ports:
-      - 9945:9944
-      - 9934:9933
-      - 30334:30333
-    volumes:
-      - relaychain-bob:/data
-      - ./chainspec-raw.json:/app/chainspec-raw.json
+      - 9948:9944
+      - 9937:9933
+      - 30337:30333
+    # volumes:
+    #   - parachain-2000-1:/data
+    build:
+      context: .
+      dockerfile: parachain-2000.Dockerfile
     command:
       - --base-path=/data
-      - --chain=/app/chainspec-raw.json
-      - --validator
+      - --chain=/app/karura-dev-2000.json
       - --ws-external
       - --rpc-external
       - --rpc-cors=all
-      - --name=bob
+      - --name=parachain-2000-1
+      - --collator
+      - --parachain-id=2000
       - --rpc-methods=unsafe
+      - --force-authoring
+      - --execution=wasm
+      - --bob
+      - --bootnodes=/dns/parachain-2000-0/tcp/30333/p2p/12D3KooWKYZTmh8ZGB2eNYKi8A81d5iZUeKqjQ4M8nbDrvoFa9Fm
+      - --listen-addr=/ip4/0.0.0.0/tcp/30333
+      - --
+      - --chain=/app/chainspec-raw.json
+      - --bootnodes=/dns4/node-6841549915988910080-0.p2p.onfinality.io/tcp/23230/p2p/12D3KooWFNk2Ms1UYKWrQ3EtDDYVgPMmZqzunoYBTGKXxRGNKdV8
+      - --execution=wasm
+      - --no-beefy
     environment:
-      RUST_LOG: parachain::candidate-backing=trace
+      RUST_LOG: sc_basic_authorship=trace
     ulimits: *a1
-  relaychain-charlie:
-    image: parity/polkadot:v0.9.9-1
+  parachain-2000-2:
     ports:
-      - 9946:9944
-      - 9935:9933
-      - 30335:30333
-    volumes:
-      - relaychain-charlie:/data
-      - ./chainspec-raw.json:/app/chainspec-raw.json
+      - 9949:9944
+      - 9938:9933
+      - 30338:30333
+    # volumes:
+    #   - parachain-2000-2:/data
+    build:
+      context: .
+      dockerfile: parachain-2000.Dockerfile
     command:
       - --base-path=/data
-      - --chain=/app/chainspec-raw.json
-      - --validator
+      - --chain=/app/karura-dev-2000.json
       - --ws-external
       - --rpc-external
       - --rpc-cors=all
-      - --name=bob
+      - --name=parachain-2000-2
+      - --collator
+      - --parachain-id=2000
       - --rpc-methods=unsafe
+      - --force-authoring
+      - --execution=wasm
+      - --charlie
+      - --bootnodes=/dns/parachain-2000-0/tcp/30333/p2p/12D3KooWKYZTmh8ZGB2eNYKi8A81d5iZUeKqjQ4M8nbDrvoFa9Fm
+      - --listen-addr=/ip4/0.0.0.0/tcp/30333
+      - --
+      - --chain=/app/chainspec-raw.json
+      - --bootnodes=/dns4/node-6841549915988910080-0.p2p.onfinality.io/tcp/23230/p2p/12D3KooWFNk2Ms1UYKWrQ3EtDDYVgPMmZqzunoYBTGKXxRGNKdV8
+      - --execution=wasm
+      - --no-beefy
     environment:
-      RUST_LOG: parachain::candidate-backing=trace
+      RUST_LOG: sc_basic_authorship=trace
     ulimits: *a1
-
-volumes:
-  ? relaychain-alice
-  ? relaychain-bob
-  ? relaychain-charlie
+# volumes:
+  # ? relaychain-alice
+  # ? relaychain-bob
+  # ? relaychain-charlie
+  # ? parachain-2000-0
+  # ? parachain-2000-1
+  # ? parachain-2000-2
